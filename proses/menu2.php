@@ -1,12 +1,8 @@
 <?php
 
-include "cek_session.php";
+include "../include/cek_session.php";
 include "koneksi.php";
 
-if ($_SESSION['role'] != "admin") {
-    header("Location: dashboard.php");
-    exit;
-}
 
 ?>
 

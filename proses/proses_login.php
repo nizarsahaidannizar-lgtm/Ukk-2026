@@ -1,31 +1,39 @@
 <?php
-
 session_start();
 
+// Panggil koneksi dari folder config/
 include "../config/koneksi.php";
 
-$email = $_POST['email'];
-$password = $_POST['password'];
+if (isset($_POST['login'])) {
+    $email    = mysqli_real_escape_string($koneksi, $_POST['email']);
+    $password = mysqli_real_escape_string($koneksi, $_POST['password']);
 
-$query = mysqli_query($koneksi, "SELECT * FROM t_users WHERE email='$email' AND password='$password'");
+    // Cari data user
+    $query = mysqli_query($koneksi, "SELECT * FROM t_users WHERE email='$email' AND password='$password'");
+    $data  = mysqli_fetch_array($query);
 
-$data = mysqli_fetch_array($query);
+    if ($data) {
+        // Simpan data login ke Session
+        $_SESSION['id']   = $data['id'];
+        $_SESSION['nama'] = $data['name'];
+        $_SESSION['role'] = $data['role'];
 
-if ($data) {
+        // Pastikan session tersimpan sebelum pindah halaman
+        session_write_close();
 
-    $_SESSION['id'] = $data['id'];
-    $_SESSION['nama'] = $data['name'];
-    $_SESSION['role'] = $data['role'];
-
-    header("location:../dashboard.php");
-    exit;
-
+        // Pindah ke dashboard.php di root folder
+        header("Location: ../dashboard.php");
+        exit();
+    } else {
+        // Jika email / password tidak cocok
+        echo "<script>
+                alert('Email atau Password salah!');
+                window.location.href = 'login.php';
+              </script>";
+        exit();
+    }
 } else {
-
-    echo "Email atau password salah";
-    echo "<br>";
-    echo "<a href='../login.php'>Kembali ke Login</a>";
-
+    header("Location: login.php");
+    exit();
 }
-
 ?>
