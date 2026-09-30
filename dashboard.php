@@ -28,7 +28,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'admin';
             <div class="col-md-3 col-lg-2 bg-dark min-vh-100 p-3">
 
                 <h4 class="text-white mb-4">
-                    My Website
+                    SMK Muhamadiyah
                 </h4>
 
                 <ul class="nav nav-pills flex-column">
@@ -46,7 +46,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'admin';
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="menu2.php" class="nav-link text-white">
+                        <a href="proses/menu2.php" class="nav-link text-white">
                             Data Guru
                         </a>
                     </li>
