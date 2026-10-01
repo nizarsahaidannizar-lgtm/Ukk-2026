@@ -2,7 +2,7 @@
 $host = "localhost";
 $users = "root";
 $pass = "";
-$db   = "db_ukk_2026";
+$db   = "db_ukk_2026_nizar";
 
 $koneksi = mysqli_connect($host, $users, $pass, $db);
 
