@@ -11,12 +11,12 @@ if (!isset($_SESSION['role']) || strtolower($_SESSION['role']) != "admin") {
 
 // Proses Hapus Data (Jika tombol hapus diklik)
 if (isset($_GET['hapus'])) {
-    $id = $_GET['hapus'];
+    $id = mysqli_real_escape_string($koneksi, $_GET['hapus']);
     $query_hapus = "DELETE FROM t_siswa WHERE id = '$id'";
     if (mysqli_query($koneksi, $query_hapus)) {
         echo "<script>
                 alert('Data siswa berhasil dihapus!');
-                window.location.href = 'menu1.php';
+                window.location.href = 'siswa.php';
               </script>";
         exit();
     } else {
@@ -33,22 +33,18 @@ if (isset($_GET['hapus'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Siswa - SMK Muhammadiyah</title>
-    <!-- Framework Bootstrap 5 CSS -->
+    <!-- Framework Bootstrap 5 CSS & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 </head>
 
-<!-- Background utama halaman menggunakan utility bg-success-subtle (Hijau Lembut) -->
 <body class="bg-success-subtle">
 
 <div class="container-fluid">
     <div class="row min-vh-100">
 
-        <!-- SIDEBAR HIJAU (Murni Utility Bootstrap 5) -->
+        <!-- SIDEBAR HIJAU -->
         <div class="col-md-3 col-lg-2 bg-success text-white p-3">
-            
-            <!-- HEADER LOGO + TEKS SMK MUHAMMADIYAH -->
             <div class="d-flex align-items-center gap-2 mb-4 px-1">
                 <img src="../logo smk muhamadiyah.png" alt="Logo SMK" class="img-fluid" style="width: 42px; height: 42px; object-fit: contain;">
                 <h5 class="fw-bold fs-6 mb-0 text-white lh-sm">
@@ -56,15 +52,14 @@ if (isset($_GET['hapus'])) {
                 </h5>
             </div>
 
-            <!-- Navigasi Menu Bootstrap (nav-pills) -->
             <div class="nav nav-pills flex-column gap-2">
                 <a href="../dashboard.php" class="nav-link text-white bg-success-emphasis">Dashboard</a>
-                <a href="menu1.php" class="nav-link active bg-dark fw-bold">Data Siswa</a>
-                <a href="#" class="nav-link text-white bg-success-emphasis">Data Guru</a>
-                <a href="#" class="nav-link text-white bg-success-emphasis">Kelas</a>
-                <a href="#" class="nav-link text-white bg-success-emphasis">Laporan</a>
+                <a href="siswa.php" class="nav-link active bg-dark fw-bold">Data Siswa</a>
+                <a href="../guru/tambah_data_guru.php" class="nav-link text-white bg-success-emphasis">Data Guru</a>
+                <a href="menu2.php" class="nav-link text-white bg-success-emphasis">Jenis Pelanggaran</a>
+                <a href="menu3.php" class="nav-link text-white bg-success-emphasis">Kelas</a>
+                <a href="menu4.php" class="nav-link text-white bg-success-emphasis">Laporan</a>
                 
-                <!-- Line Separator & Logout Tepat di Bawah Laporan -->
                 <hr class="text-white my-2">
                 <a href="logout.php" class="nav-link text-primary fw-semibold px-2">Logout</a>
             </div>
@@ -75,15 +70,16 @@ if (isset($_GET['hapus'])) {
             <div class="card border-0 shadow-sm bg-white rounded-4">
                 <div class="card-body p-4 p-md-5">
                     
-                    <!-- Header Judul & Tombol Tambah Data -->
+                    <!-- Header Card & Tombol Tambah Data -->
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h3 class="fw-bold text-success mb-0">Daftar Data Siswa</h3>
-                        <a href="tambah_siswa.php" class="btn btn-success fw-semibold px-3 py-2 rounded-3">
-                            <i class="bi bi-plus-lg me-1"></i> Tambah Data
+                        <!-- LINK DIUBAH KE tambah_data_siswa.php -->
+                        <a href="tambah_data_siswa.php" class="btn btn-success fw-semibold">
+                            <i class="bi bi-plus-lg me-1"></i> Tambah Data Siswa
                         </a>
                     </div>
 
-                    <!-- Tabel Data Siswa -->
+                    <!-- Tabel Responsive -->
                     <div class="table-responsive">
                         <table class="table table-hover table-bordered align-middle mb-0">
                             <thead class="table-success text-center">
@@ -102,7 +98,6 @@ if (isset($_GET['hapus'])) {
                             <tbody>
                                 <?php
                                 $no = 1;
-                                // Mengambil data dari tabel t_siswa diurutkan dari data terbaru
                                 $query = mysqli_query($koneksi, "SELECT * FROM t_siswa ORDER BY id DESC");
                                 
                                 if (mysqli_num_rows($query) > 0) {
@@ -128,9 +123,9 @@ if (isset($_GET['hapus'])) {
                                                     <a href="edit_siswa.php?id=<?= $data['id']; ?>" class="btn btn-warning btn-sm text-white fw-semibold">
                                                         <i class="bi bi-pencil-square"></i> Ubah
                                                     </a>
-                                                    <a href="menu1.php?hapus=<?= $data['id']; ?>" 
+                                                    <a href="siswa.php?hapus=<?= $data['id']; ?>" 
                                                        class="btn btn-danger btn-sm fw-semibold" 
-                                                       onclick="return confirm('Apakah Anda yakin ingin menghapus data <?= htmlspecialchars($data['nama']); ?>?');">
+                                                       onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
                                                         <i class="bi bi-trash"></i> Hapus
                                                     </a>
                                                 </div>
@@ -139,7 +134,7 @@ if (isset($_GET['hapus'])) {
                                 <?php 
                                     }
                                 } else {
-                                    echo "<tr><td colspan='9' class='text-center py-4 text-muted'>Belum ada data siswa tersimpan.</td></tr>";
+                                    echo "<tr><td colspan='9' class='text-center py-4 text-muted'>Belum ada data siswa.</td></tr>";
                                 }
                                 ?>
                             </tbody>
@@ -153,7 +148,6 @@ if (isset($_GET['hapus'])) {
     </div>
 </div>
 
-<!-- Framework Bootstrap 5 JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
