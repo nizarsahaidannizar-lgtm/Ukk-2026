@@ -67,10 +67,17 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'admin';
                     </a>
 
                     
+                       <!-- PENEMPATAN SISWA -->
+                    <a href="proses/penempatan_siswa.php" class="nav-link text-white bg-success-emphasis">
+                       Penempatan Siswa
+                    </a>
+
+                    
                        <!-- KELOLA WALI KELAS -->
                     <a href="proses/kelola_wali_kelas.php" class="nav-link text-white bg-success-emphasis">
                        Wali Kelas
                     </a>
+
 
                     
                        <!-- KELOLA KATEGORI PELANGGARAN-->

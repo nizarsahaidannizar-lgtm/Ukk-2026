@@ -1,7 +1,14 @@
 <?php
 session_start();
-// Koneksi ke database dari folder config/
+
+// Hubungkan ke file koneksi
 include '../config/koneksi.php';
+
+// Pengecekan session
+if (!isset($_SESSION['role'])) {
+    header("Location: ../login.php");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -9,60 +16,59 @@ include '../config/koneksi.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jenis Pelanggaran</title>
-    <!-- Bootstrap 5 CSS -->
+    <title>Data Jenis Pelanggaran</title>
+    <!-- Framework Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body class="p-4 bg-white">
 
-<div class="container my-5">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Data Jenis Pelanggaran</h4>
-            <a href="../dashboard.php" class="btn btn-sm btn-light text-primary fw-bold">Kembali ke Dashboard</a>
-        </div>
-        <div class="card-body">
+<div class="card border">
+    <!-- Header Hijau dengan Tombol Putih -->
+    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+        <h5 class="m-0 fw-bold">Data Jenis Pelanggaran</h5>
+        <a href="../dashboard.php" class="btn btn-light btn-sm text-success fw-bold">Kembali ke Dashboard</a>
+    </div>
 
-            <div class="table-responsive">
-                <table class="table table-striped table-hover border">
-                    <thead class="table-dark">
-                        <tr>
-                            <th width="50">No</th>
-                            <th>Nama Pelanggaran</th>
-                            <th width="100">Poin</th>
+    <!-- Tabel Data Berwarna Putih -->
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle m-0 bg-white">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-center" style="width: 60px;">No</th>
+                    <th>Nama Pelanggaran</th>
+                    <th class="text-center" style="width: 100px;">Poin</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $no = 1;
+                $query = mysqli_query($koneksi, "SELECT * FROM t_pelanggaran ORDER BY id DESC");
+
+                if ($query && mysqli_num_rows($query) > 0) {
+                    while ($data = mysqli_fetch_assoc($query)) {
+                ?>
+                        <tr class="bg-white">
+                            <td class="text-center"><?= $no++; ?></td>
+                            <td><?= htmlspecialchars($data['nama_pelanggaran'] ?? $data['jenis_pelanggaran'] ?? $data['nama'] ?? '-'); ?></td>
+                            <td class="text-center">
+                                <span class="badge bg-danger fs-6">
+                                    <?= htmlspecialchars($data['poin'] ?? 0); ?>
+                                </span>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        $no = 1;
-                        // Query mengambil data dari tabel t_pelanggaran
-                        $query = mysqli_query($koneksi, "SELECT * FROM t_pelanggaran ORDER BY id_pelanggaran ASC");
-
-                        if ($query && mysqli_num_rows($query) > 0) {
-                            while ($data = mysqli_fetch_assoc($query)) {
-                        ?>
-                                <tr>
-                                    <td><?= $no++; ?></td>
-                                    <td><?= htmlspecialchars($data['nama_pelanggaran']); ?></td>
-                                    <td><span class="badge bg-danger fs-6"><?= htmlspecialchars($data['poin']); ?></span></td>
-                                </tr>
-                        <?php 
-                            }
-                        } else { 
-                        ?>
-                            <tr>
-                                <td colspan="3" class="text-center text-muted">Belum ada data jenis pelanggaran.</td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
+                <?php 
+                    }
+                } else {
+                ?>
+                    <tr>
+                        <td colspan="3" class="text-center text-muted py-3 bg-white">Belum ada data jenis pelanggaran tersimpan.</td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
     </div>
 </div>
 
-<!-- Bootstrap 5 JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

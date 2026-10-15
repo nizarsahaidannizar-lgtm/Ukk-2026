@@ -1,14 +1,9 @@
 <?php
 session_start();
 
-// Pengecekan session login
-if (!isset($_SESSION['status']) || $_SESSION['status'] != "login") {
-    header("Location: ../proses/login.php");
-    exit();
-}
-
 // Hubungkan ke koneksi database
 include '../config/koneksi.php';
+include 'data_siswa.php';
 ?>
 
 <!DOCTYPE html>

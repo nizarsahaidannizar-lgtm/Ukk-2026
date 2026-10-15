@@ -73,7 +73,6 @@ if (isset($_GET['hapus'])) {
                     <!-- Header Card & Tombol Tambah Data -->
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h3 class="fw-bold text-success mb-0">Daftar Data Siswa</h3>
-                        <!-- LINK DIUBAH KE tambah_data_siswa.php -->
                         <a href="tambah_data_siswa.php" class="btn btn-success fw-semibold">
                             <i class="bi bi-plus-lg me-1"></i> Tambah Data Siswa
                         </a>
@@ -100,19 +99,40 @@ if (isset($_GET['hapus'])) {
                                 $no = 1;
                                 $query = mysqli_query($koneksi, "SELECT * FROM t_siswa ORDER BY id DESC");
                                 
-                                if (mysqli_num_rows($query) > 0) {
+                                if ($query && mysqli_num_rows($query) > 0) {
                                     while ($data = mysqli_fetch_assoc($query)) {
+                                        
+                                        // 1. Ambil data tanggal lahir secara aman (kolom 'tanggal_lahir' atau 'tgl_lahir')
+                                        $raw_tgl = $data['tanggal_lahir'] ?? $data['tgl_lahir'] ?? '';
+                                        if (!empty($raw_tgl) && $raw_tgl != '0000-00-00') {
+                                            $tgl_lahir = date('d-m-Y', strtotime($raw_tgl));
+                                        } else {
+                                            $tgl_lahir = '-';
+                                        }
+
+                                        // 2. Singkatkan Jenis Kelamin (L/P)
+                                        $jk = $data['jenis_kelamin'] ?? $data['jk'] ?? '-';
+                                        if (strcasecmp($jk, 'Laki-Laki') == 0 || strcasecmp($jk, 'L') == 0) {
+                                            $jk_display = 'L';
+                                        } elseif (strcasecmp($jk, 'Perempuan') == 0 || strcasecmp($jk, 'P') == 0) {
+                                            $jk_display = 'P';
+                                        } else {
+                                            $jk_display = htmlspecialchars($jk);
+                                        }
+
+                                        // 3. Pengecekan Status Aktif
+                                        $status = $data['status_aktif'] ?? $data['status'] ?? 0;
                                 ?>
                                         <tr>
                                             <td class="text-center fw-semibold"><?= $no++; ?></td>
-                                            <td><?= htmlspecialchars($data['nis']); ?></td>
-                                            <td><?= htmlspecialchars($data['nisn']); ?></td>
-                                            <td class="fw-bold text-dark"><?= htmlspecialchars($data['nama']); ?></td>
-                                            <td class="text-center"><?= htmlspecialchars($data['jenis_kelamin']); ?></td>
-                                            <td class="text-nowrap"><?= date('d-m-Y', strtotime($data['tgl_lahir'])); ?></td>
-                                            <td><?= htmlspecialchars($data['alamat']); ?></td>
+                                            <td><?= htmlspecialchars($data['nis'] ?? '-'); ?></td>
+                                            <td><?= htmlspecialchars($data['nisn'] ?? '-'); ?></td>
+                                            <td class="fw-bold text-dark"><?= htmlspecialchars($data['nama'] ?? '-'); ?></td>
+                                            <td class="text-center"><?= $jk_display; ?></td>
+                                            <td class="text-nowrap text-center"><?= $tgl_lahir; ?></td>
+                                            <td><?= htmlspecialchars($data['alamat'] ?? '-'); ?></td>
                                             <td class="text-center">
-                                                <?php if ($data['status_aktif'] == 1 || $data['status_aktif'] == '1'): ?>
+                                                <?php if ($status == 1 || $status == '1' || strcasecmp($status, 'aktif') == 0): ?>
                                                     <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Aktif</span>
                                                 <?php else: ?>
                                                     <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">Non-Aktif</span>
